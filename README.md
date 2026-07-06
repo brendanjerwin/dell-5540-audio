@@ -79,9 +79,25 @@ killall cosmic-panel
 | `pipewire/pipewire.conf.d/preamp-sink.conf` | Filter-chain: 5-band EQ + widener + limiter |
 | `wireplumber/wireplumber.conf.d/50-default-volume.conf` | Default sink volume = 1.0 |
 | `wireplumber/wireplumber.conf.d/51-soft-mixer.conf` | Hardware mixer disabled, max-volume 10× |
-| `state/wireplumber/default-nodes` | Default sink = boosted_input.built_in |
-| `state/wireplumber/default-routes` | Speaker route volume = 1.0 |
-| `state/cosmic/.../default_sink_name` | COSMIC cached sink name |
+
+## Post-Install Verification
+
+After installing and rebooting, verify:
+
+```bash
+# Default sink should be boosted_input.built_in
+pactl get-default-sink
+
+# ALSA Master should be 127/127 (0 dB)
+amixer -c 0 cget numid=17 | grep values
+
+# Volume keys should work
+pactl set-sink-volume @DEFAULT_SINK@ -5%
+pactl set-sink-volume @DEFAULT_SINK@ +5%
+
+# Audio at 20% should be audible
+speaker-test -c 2 -t sine -f 440
+```
 
 ## Tuning
 
