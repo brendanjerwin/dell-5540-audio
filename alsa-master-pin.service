@@ -1,0 +1,14 @@
+[Unit]
+Description=Pin ALSA Master to 0 dB after WirePlumber starts
+After=wireplumber.service
+Requires=wireplumber.service
+
+[Service]
+Type=oneshot
+# Wait for WirePlumber to finish restoring routes
+ExecStartPre=/bin/sleep 3
+# Pin Master to 127/127 (0 dB) — WirePlumber's route restore may have lowered it
+ExecStart=/usr/bin/amixer -c 0 cset numid=17 127
+
+[Install]
+WantedBy=default.target

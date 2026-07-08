@@ -29,8 +29,13 @@ echo "Setting ALSA Master to 0 dB (127/127)..."
 amixer -c 0 cset numid=17 127 >/dev/null
 
 # Save ALSA state
-echo "Saving ALSA state..."
-sudo alsactl store 0
+
+# Install ALSA Master pin service (ensures hardware stays at 0 dB on reboot)
+echo "Installing ALSA Master pin service..."
+mkdir -p ~/.config/systemd/user
+cp alsa-master-pin.service ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable alsa-master-pin.service
 
 # Restart audio services
 echo "Restarting PipeWire and WirePlumber..."

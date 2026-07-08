@@ -49,6 +49,14 @@ sudo apt install swh-plugins
 
 ## Installation
 
+### One-command install
+
+```bash
+./install.sh
+```
+
+### Manual install
+
 ```bash
 # PipeWire filter-chain config
 cp pipewire/pipewire.conf.d/preamp-sink.conf ~/.config/pipewire/pipewire.conf.d/
@@ -56,6 +64,12 @@ cp pipewire/pipewire.conf.d/preamp-sink.conf ~/.config/pipewire/pipewire.conf.d/
 # WirePlumber config
 cp wireplumber/wireplumber.conf.d/50-default-volume.conf ~/.config/wireplumber/wireplumber.conf.d/
 cp wireplumber/wireplumber.conf.d/51-soft-mixer.conf ~/.config/wireplumber/wireplumber.conf.d/
+
+# ALSA Master pin service (ensures hardware stays at 0 dB after reboot)
+mkdir -p ~/.config/systemd/user
+cp alsa-master-pin.service ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable alsa-master-pin.service
 
 # Set ALSA hardware Master to 0 dB (127/127) and persist
 amixer -c 0 cset numid=17 127
@@ -72,13 +86,12 @@ killall cosmic-settings-daemon; /usr/bin/cosmic-settings-daemon &
 killall cosmic-panel
 ```
 
-## Files
-
 | File | Purpose |
 |------|---------|
 | `pipewire/pipewire.conf.d/preamp-sink.conf` | Filter-chain: 5-band EQ + widener + limiter |
 | `wireplumber/wireplumber.conf.d/50-default-volume.conf` | Default sink volume = 1.0 |
 | `wireplumber/wireplumber.conf.d/51-soft-mixer.conf` | Hardware mixer disabled, max-volume 10× |
+| `alsa-master-pin.service` | Systemd user service: pins ALSA Master at 0 dB after boot |
 
 ## Post-Install Verification
 
